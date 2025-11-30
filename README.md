@@ -1,0 +1,1 @@
+# IA Pau - Atelier Agentic RAG

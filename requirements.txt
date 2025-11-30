@@ -1,0 +1,17 @@
+sec-edgar-downloader
+pybind11
+unstructured
+langchain
+langgraph
+langchain-openai
+langchain-google-genai
+qdrant-client==1.15.1
+fastembed
+sentence-transformers
+langsmith
+ragas
+tavily-python
+python-dotenv
+pandas
+tqdm
+rich

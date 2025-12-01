@@ -28,14 +28,15 @@ query_optimizer_llm = ChatOpenAI(model='gpt-4o-mini', api_key=os.getenv('OPENAI_
 cross_encoder_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 embedding_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
 
-# Close existing client if it exists
-try:
-    if 'client' in globals() and client is not None:
-        client.close()
-except:
-    pass
+_qdrant_client = None
+def get_qdrant_client():
+    """Get or create a singleton Qdrant client instance."""
+    global _qdrant_client
+    if _qdrant_client is None:
+        _qdrant_client = qdrant_client.QdrantClient(path=QDRANT_PATH)
+    return _qdrant_client
 
-client = qdrant_client.QdrantClient(path=QDRANT_PATH)
+client = get_qdrant_client()
 
 # Initialize SQL database
 db = SQLDatabase.from_uri(f"sqlite:///{DB_PATH}")

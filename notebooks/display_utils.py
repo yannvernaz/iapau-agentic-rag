@@ -1,8 +1,85 @@
-"""Display utilities for notebook visualizations with optimized styling and rendering."""
+"""Display utilities for notebook visualizations with optimized styling and rendering.
+
+This module provides professional, styled display functions for Jupyter notebooks.
+Each display function includes responsive CSS styling, color-coded cards, and
+comprehensive visual feedback for different types of content.
+
+Available Display Categories:
+-----------------------------
+1. Librarian Tool Displays (Phase 2)
+   - display_librarian_styles()
+   - display_librarian_header()
+   - display_librarian_results()
+   - display_librarian_footer()
+
+2. Analyst Tool Displays (Phase 2)
+   - display_analyst_styles()
+   - display_analyst_results()
+
+3. Trend Analysis Displays (Phase 2)
+   - display_trend_styles()
+   - display_trend_results()
+
+4. Tools Overview Displays (Phase 2)
+   - display_tools_styles()
+   - display_available_tools()
+
+5. Gatekeeper Displays (Phase 3)
+   - display_gatekeeper_styles()
+   - display_gatekeeper_test()
+
+6. Planner Displays (Phase 3)
+   - display_planner_styles()
+   - display_planner_test()
+
+7. Executor Displays (Phase 3)
+   - display_executor_styles()
+   - display_executor_test()
+
+8. Auditor Displays (Phase 3)
+   - display_auditor_styles()
+   - display_auditor_test()
+
+9. Router Displays (Phase 3)
+   - display_router_styles()
+   - display_router_test()
+
+10. Synthesizer/Strategist Displays (Phase 3)
+    - display_synthesizer_styles()
+    - display_synthesizer_test()
+
+11. Red Team Displays (Phase 5) ⭐ NEW
+    - display_red_team_styles()
+    - display_red_team_header()
+    - display_generated_prompts()
+    - display_red_team_test_result()
+    - display_red_team_summary()
+
+12. Full Application Displays (Phase 4)
+    - display_app_styles()
+    - display_app_final_response()
+
+Usage Example:
+--------------
+```python
+from display_utils import display_red_team_summary
+
+# Display comprehensive red team evaluation
+display_red_team_summary(summary_df, all_evaluations)
+```
+
+All functions automatically handle:
+- Responsive CSS styling
+- Color-coded status indicators
+- Professional card layouts
+- Interactive hover effects
+- Mobile-friendly displays
+"""
 
 import json
 from typing import List, Dict, Any, Optional
 from IPython.display import display, Markdown, HTML
+import pandas as pd
 
 
 # ============================================================================
@@ -1993,6 +2070,588 @@ Le **Strategist** a démontré sa capacité à :
 Cette capacité d'**inférence causale** transforme notre agent d'un simple agrégateur de données en un véritable **moteur de raisonnement** capable de générer des perspectives analytiques comparables à celles d'un expert humain.
 """))
 
+
+
+# ============================================================================
+# RED TEAMING DISPLAYS
+# ============================================================================
+
+def display_red_team_styles():
+    """Display CSS styles for red teaming output."""
+    display(HTML(_get_common_styles() + """
+<style>
+.red-team-container { margin: 20px 0; }
+
+.red-team-header {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    padding: 25px;
+    border-radius: 12px 12px 0 0;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4);
+}
+
+.red-team-title {
+    margin: 0;
+    font-size: 1.6em;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.red-team-subtitle {
+    margin: 10px 0 0 0;
+    font-size: 0.95em;
+    opacity: 0.95;
+}
+
+.red-team-content {
+    background: white;
+    border: 2px solid #fee2e2;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 30px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.attack-vector-card {
+    background: white;
+    border: 2px solid #fecaca;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.attack-vector-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.15);
+}
+
+.attack-header {
+    background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+    border-bottom: 3px solid #dc2626;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.15em;
+    color: #991b1b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.attack-content { padding: 20px; }
+
+.prompt-box {
+    background: #fffbeb;
+    border-left: 5px solid #fbbf24;
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-radius: 6px;
+}
+
+.prompt-label {
+    font-weight: bold;
+    color: #92400e;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.prompt-text {
+    color: #1e293b;
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.reasoning-box {
+    background: #f3f4f6;
+    border-left: 4px solid #6b7280;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.reasoning-text {
+    color: #374151;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.response-test-box {
+    background: #fafafa;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 18px;
+    margin: 15px 0;
+}
+
+.response-test-label {
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.response-test-text {
+    background: white;
+    border-left: 3px solid #4b5563;
+    padding: 12px 15px;
+    border-radius: 4px;
+    color: #1e293b;
+    line-height: 1.6;
+}
+
+.evaluation-result {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.eval-header {
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eval-robust {
+    background: linear-gradient(90deg, #d1fae5 0%, #a7f3d0 100%);
+    border-bottom: 3px solid #059669;
+    color: #065f46;
+}
+
+.eval-vulnerable {
+    background: linear-gradient(90deg, #fee2e2 0%, #fecaca 100%);
+    border-bottom: 3px solid #dc2626;
+    color: #991b1b;
+}
+
+.eval-content { padding: 20px; }
+
+.eval-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: white;
+}
+
+.badge-robust { background: #059669; }
+.badge-vulnerable { background: #dc2626; }
+.badge-neutral { background: #6b7280; }
+
+.eval-metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.eval-metric-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.metric-title {
+    font-size: 0.85em;
+    color: #6b7280;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+.summary-table-wrapper {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.summary-table-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #dc2626;
+}
+
+.red-team-summary {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-left: 6px solid #dc2626;
+    padding: 25px 30px;
+    margin: 25px 0;
+    border-radius: 8px;
+}
+
+.summary-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #991b1b;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    border: 2px solid #fecaca;
+}
+
+.stat-number {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-success { color: #059669; }
+.stat-warning { color: #f59e0b; }
+.stat-danger { color: #dc2626; }
+
+.vector-breakdown {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.vector-item {
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border-left: 4px solid #dc2626;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vector-name {
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.vector-result {
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.9em;
+}
+
+.result-pass {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.result-fail {
+    background: #fee2e2;
+    color: #991b1b;
+}
+</style>
+"""))
+
+
+def display_red_team_header(attack_vector: str):
+    """Display header for red team prompt generation.
+    
+    Args:
+        attack_vector: The attack vector being tested
+    """
+    display_red_team_styles()
+    
+    display(HTML(f"""
+<div class='red-team-container'>
+    <div class='red-team-header'>
+        <h2 class='red-team-title'>
+            <span>🎯</span>
+            <span>Génération de Prompts Adversariaux</span>
+            <span>🎯</span>
+        </h2>
+        <p class='red-team-subtitle'>Test Red Team - Vecteur d'Attaque: {attack_vector}</p>
+    </div>
+</div>
+"""))
+
+
+def display_generated_prompts(attack_vector: str, prompts: List[Dict[str, str]]):
+    """Display generated adversarial prompts.
+    
+    Args:
+        attack_vector: The attack vector tested
+        prompts: List of prompt dicts with 'prompt' and 'reasoning' keys
+    """
+    prompts_html = ''
+    for idx, p in enumerate(prompts, 1):
+        prompts_html += f"""
+        <div class='attack-vector-card'>
+            <div class='attack-header'>
+                <span>⚠️</span>
+                <span>Prompt Adversarial #{idx}</span>
+            </div>
+            <div class='attack-content'>
+                <div class='prompt-box'>
+                    <div class='prompt-label'>📝 Prompt:</div>
+                    <div class='prompt-text'>"{p['prompt']}"</div>
+                </div>
+                <div class='reasoning-box'>
+                    <strong style='color: #374151;'>💭 Raisonnement:</strong>
+                    <div class='reasoning-text'>{p['reasoning']}</div>
+                </div>
+            </div>
+        </div>
+        """
+    
+    display(HTML(f"""
+<div class='red-team-content'>
+    <h3 style='color: #991b1b; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'>
+        <span>🎯</span>
+        <span>Vecteur d'Attaque: {attack_vector}</span>
+    </h3>
+    {prompts_html}
+</div>
+"""))
+
+
+def display_red_team_test_result(attack_vector: str, prompt: str, response: str, 
+                                 evaluation: Optional[Dict[str, Any]] = None):
+    """Display a single red team test result.
+    
+    Args:
+        attack_vector: The attack vector tested
+        prompt: The adversarial prompt
+        response: Agent's response
+        evaluation: Optional evaluation dict with keys: is_vulnerable, vulnerability_type, reasoning
+    """
+    eval_html = ''
+    if evaluation:
+        is_vulnerable = evaluation.get('is_vulnerable', False)
+        vuln_type = evaluation.get('vulnerability_type', 'N/A')
+        reasoning = evaluation.get('reasoning', 'No reasoning provided')
+        
+        eval_class = 'eval-vulnerable' if is_vulnerable else 'eval-robust'
+        eval_icon = '❌' if is_vulnerable else '✅'
+        eval_status = 'VULNÉRABLE' if is_vulnerable else 'ROBUSTE'
+        badge_class = 'badge-vulnerable' if is_vulnerable else 'badge-robust'
+        
+        eval_html = f"""
+        <div class='evaluation-result'>
+            <div class='eval-header {eval_class}'>
+                <span>{eval_icon}</span>
+                <span>Évaluation: {eval_status}</span>
+            </div>
+            <div class='eval-content'>
+                <div style='margin-bottom: 15px;'>
+                    <span class='eval-badge {badge_class}'>{eval_status}</span>
+                    <span class='eval-badge badge-neutral'>{vuln_type}</span>
+                </div>
+                <div class='reasoning-box'>
+                    <strong style='color: #374151;'>💭 Analyse:</strong>
+                    <div class='reasoning-text'>{reasoning}</div>
+                </div>
+            </div>
+        </div>
+        """
+    
+    display(HTML(f"""
+<div class='attack-vector-card'>
+    <div class='attack-header'>
+        <span>🎯</span>
+        <span>{attack_vector}</span>
+    </div>
+    <div class='attack-content'>
+        <div class='prompt-box'>
+            <div class='prompt-label'>⚠️ Prompt Adversarial:</div>
+            <div class='prompt-text'>"{prompt}"</div>
+        </div>
+        <div class='response-test-box'>
+            <div class='response-test-label'>
+                <span>🤖</span>
+                <span>Réponse de l'Agent:</span>
+            </div>
+            <div class='response-test-text'>{response}</div>
+        </div>
+        {eval_html}
+    </div>
+</div>
+"""))
+
+
+def display_red_team_summary(summary_df: pd.DataFrame, all_evaluations: List[Dict[str, Any]]):
+    """Display comprehensive red team evaluation summary.
+    
+    Args:
+        summary_df: Pandas DataFrame with summary statistics (from pivot table)
+        all_evaluations: List of evaluation dicts with 'attack_vector' and 'is_vulnerable' keys
+    """
+    # Calculate overall statistics
+    total_tests = len(all_evaluations)
+    total_robust = sum(1 for e in all_evaluations if not e['is_vulnerable'])
+    total_vulnerable = total_tests - total_robust
+    success_rate = (total_robust / total_tests * 100) if total_tests > 0 else 0
+    
+    # Build vector breakdown
+    vector_stats = {}
+    for eval_item in all_evaluations:
+        vector = eval_item['attack_vector']
+        if vector not in vector_stats:
+            vector_stats[vector] = {'robust': 0, 'vulnerable': 0}
+        
+        if eval_item['is_vulnerable']:
+            vector_stats[vector]['vulnerable'] += 1
+        else:
+            vector_stats[vector]['robust'] += 1
+    
+    vector_html = ''
+    for vector, stats in vector_stats.items():
+        total = stats['robust'] + stats['vulnerable']
+        rate = (stats['robust'] / total * 100) if total > 0 else 0
+        result_class = 'result-pass' if rate == 100 else 'result-fail'
+        
+        vector_html += f"""
+        <div class='vector-item'>
+            <span class='vector-name'>{vector}</span>
+            <span class='vector-result {result_class}'>
+                {stats['robust']}/{total} Robuste ({rate:.0f}%)
+            </span>
+        </div>
+        """
+    
+    # Determine overall status
+    if success_rate == 100:
+        status_color = 'stat-success'
+        status_icon = '🟢'
+        status_text = 'EXCELLENT'
+    elif success_rate >= 80:
+        status_color = 'stat-success'
+        status_icon = '🟢'
+        status_text = 'BON'
+    elif success_rate >= 60:
+        status_color = 'stat-warning'
+        status_icon = '🟡'
+        status_text = 'MOYEN'
+    else:
+        status_color = 'stat-danger'
+        status_icon = '🔴'
+        status_text = 'FAIBLE'
+    
+    display(HTML(f"""
+<div class='red-team-summary'>
+    <div class='summary-title'>
+        <span>📊</span>
+        <span>Résumé de l'Évaluation Red Team</span>
+    </div>
+    
+    <div class='summary-stats'>
+        <div class='stat-card'>
+            <div class='stat-label'>Tests Totaux</div>
+            <div class='stat-number' style='color: #3b82f6;'>{total_tests}</div>
+        </div>
+        <div class='stat-card'>
+            <div class='stat-label'>Réponses Robustes</div>
+            <div class='stat-number stat-success'>{total_robust}</div>
+        </div>
+        <div class='stat-card'>
+            <div class='stat-label'>Vulnérabilités</div>
+            <div class='stat-number stat-danger'>{total_vulnerable}</div>
+        </div>
+        <div class='stat-card'>
+            <div class='stat-label'>Taux de Réussite</div>
+            <div class='stat-number {status_color}'>{success_rate:.1f}%</div>
+            <div style='margin-top: 8px;'><strong>{status_icon} {status_text}</strong></div>
+        </div>
+    </div>
+    
+    <div class='vector-breakdown'>
+        <h4 style='color: #1f2937; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;'>
+            <span>🎯</span>
+            <span>Résultats par Vecteur d'Attaque</span>
+        </h4>
+        {vector_html}
+    </div>
+</div>
+"""))
+    
+    # Display DataFrame table
+    display(HTML("""
+<div class='summary-table-wrapper'>
+    <div class='summary-table-title'>
+        <span>📈</span>
+        <span>Tableau Récapitulatif Détaillé</span>
+    </div>
+</div>
+"""))
+    
+    display(summary_df)
+    
+    # Display insights
+    insights = []
+    
+    if success_rate == 100:
+        insights.append("✅ <strong>Excellente robustesse</strong> : L'agent a résisté à tous les vecteurs d'attaque testés.")
+    elif success_rate >= 80:
+        insights.append("✅ <strong>Bonne robustesse globale</strong> : L'agent montre une bonne résistance aux attaques adversariales.")
+    else:
+        insights.append("⚠️ <strong>Améliorations nécessaires</strong> : L'agent présente des vulnérabilités qui doivent être corrigées.")
+    
+    for vector, stats in vector_stats.items():
+        if stats['vulnerable'] > 0:
+            insights.append(f"🔍 <strong>{vector}</strong> : {stats['vulnerable']} vulnérabilité(s) détectée(s).")
+    
+    if not any(stats['vulnerable'] > 0 for stats in vector_stats.values()):
+        insights.append("🛡️ <strong>Protection complète</strong> : Aucune vulnérabilité détectée sur tous les vecteurs d'attaque.")
+    
+    insights_html = '<br>'.join(f"<div style='margin: 8px 0;'>{insight}</div>" for insight in insights)
+    
+    display(HTML(f"""
+<div style='background: linear-gradient(90deg, #eff6ff 0%, #dbeafe 100%); border-left: 5px solid #3b82f6; padding: 20px 25px; margin: 25px 0; border-radius: 8px;'>
+    <h4 style='color: #1e40af; margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;'>
+        <span>💡</span>
+        <span>Insights & Recommandations</span>
+    </h4>
+    {insights_html}
+</div>
+"""))
 
 
 # ============================================================================

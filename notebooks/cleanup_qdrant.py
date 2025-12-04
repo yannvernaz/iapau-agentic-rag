@@ -33,10 +33,6 @@ def cleanup_qdrant_locks():
     
     if removed_count == 0:
         print("  No lock files found.")
-    else:
-        print(f"\nCleaned up {removed_count} lock file(s).")
-    
-    print("\nYou can now restart your kernel and run your notebook again.")
 
 if __name__ == "__main__":
     cleanup_qdrant_locks()

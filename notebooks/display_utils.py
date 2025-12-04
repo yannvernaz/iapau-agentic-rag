@@ -314,15 +314,6 @@ def display_analyst_results(query: str, sql_steps: Any, result: str):
 </div>
 """))
     
-    # Extract and display SQL query
-    display(HTML("<p style='margin: 15px 0 8px 0; color: #2c3e50; font-weight: bold; font-size: 1.05em;'>📊 Requête SQL générée :</p>"))
-    
-    sql_query = _extract_sql_query(sql_steps)
-    if sql_query:
-        display(HTML(f"<pre class='analyst-sql code-block'>{sql_query}</pre>"))
-    else:
-        display(Markdown("> *Aucune requête SQL générée visible. Vérifiez le mode verbose de l'agent SQL.*"))
-    
     # Display final result
     display(HTML(f"""
 <p style='margin: 15px 0 8px 0; color: #2c3e50; font-weight: bold; font-size: 1.05em;'>✅ Résultat final :</p>
@@ -1738,7 +1729,7 @@ Le **Router** est le système nerveux de notre agent. Il a démontré sa capacit
 - 🔄 **Gérer** les boucles de rétroaction pour l'auto-correction
 - 🎯 **Optimiser** le flux d'exécution pour maximiser la qualité des résultats
 
-Cette logique de routage complexe transforme notre graphe linéaire en un véritable moteur de raisonnement cognitif capable d'adaptation et d'auto-amélioration.
+Cette logique de routage transforme notre graphe en un véritable moteur de raisonnement cognitif capable d'adaptation et d'auto-amélioration.
 """))
 
 
@@ -2002,7 +1993,7 @@ def display_synthesizer_test(original_request: str, intermediate_steps: List[Dic
     <div class='synthesizer-header'>
         <h2 class='synthesizer-title'>🧠 Test du Strategist (Synthesizer) Node</h2>
         <p class='synthesizer-subtitle'>
-            Synthèse intelligente avec inférence causale et génération d'insights
+            Synthèse avec inférence causale et génération d'insights
         </p>
     </div>
     <div class='synthesizer-content'>

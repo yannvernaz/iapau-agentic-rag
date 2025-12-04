@@ -2399,7 +2399,7 @@ def display_red_team_header(attack_vector: str):
             <span>Génération de Prompts Adversariaux</span>
             <span>🎯</span>
         </h2>
-        <p class='red-team-subtitle'>Test Red Team - Vecteur d'Attaque: {attack_vector}</p>
+        <p class='red-team-subtitle'>Test Red Team - Vecteur d'attaque: {attack_vector}</p>
     </div>
 </div>
 """))

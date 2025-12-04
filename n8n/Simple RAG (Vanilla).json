@@ -1,0 +1,569 @@
+{
+  "name": "Simple RAG (Vanilla)",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "47169615-e15d-4e3c-8fa3-dddd448a4337",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        1088,
+        528
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "00ee3a85-8f8f-46ee-9043-1b472f076344",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        528,
+        96
+      ],
+      "webhookId": "c1c5797b-1091-4935-a98c-9520f087b908",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": {}
+        }
+      },
+      "id": "11e00a3e-97c7-4279-9a93-2d686d13ad93",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        576,
+        320
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 🐕 . RAG Flow",
+        "height": 668,
+        "width": 792,
+        "color": 7
+      },
+      "id": "be607582-b772-49fd-9931-68c4d7246c3f",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the knowledge base for relevant information to answer questions",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "ia-pau",
+          "mode": "list",
+          "cachedResultName": "ia-pau"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        1008,
+        320
+      ],
+      "id": "c20262e2-9a27-43ac-ae33-a99ed62ed1df",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "57UaYwCNIhhwV3Ps",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "1e096fa9-5c53-4de9-be99-ab30fac371ee",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Vous êtes un assistant IA qui a accès à une base de connaissances. Lorsque les utilisateurs posent des questions, utilisez l'outil de recherche de la base de connaissances pour trouver les informations pertinentes et fournir des réponses précises et utiles en fonction du contexte récupéré. Citez toujours les informations provenant de la base de connaissances lorsque vous répondez aux questions."
+        }
+      },
+      "id": "319afc04-790d-4bfb-b45d-83a6b05b4bad",
+      "name": "RAG Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        800,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc17f2be-ce12-488f-89c7-de200b4c4869",
+              "name": "AI output",
+              "type": "string",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "id": "c396e3b8-f07f-4153-9892-1b499a724dbc",
+              "name": "AI output gCO₂e",
+              "type": "number",
+              "value": "={{ Math.ceil($json.output.length / 4) * $('Conversion Factor (CO₂)').item.json['Conversion factor (in gCO₂e/token)'] }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "df527313-b0a5-48b5-8b44-9c8d545a44d0",
+      "name": "Calculate gCO₂e1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1232,
+        1008
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2c5484b-173e-4647-8dc1-23c32a899f75",
+              "name": "Conversion factor (in gCO₂e/token)",
+              "type": "number",
+              "value": 0.0612
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "3b7db169-7cf9-4e34-909f-3f904c20b574",
+      "name": "Conversion Factor (CO₂)",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1008,
+        1008
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "## Mesurer l'empreinte carbone\n",
+        "height": 448,
+        "width": 1344
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        720
+      ],
+      "typeVersion": 1,
+      "id": "2262f444-3a6f-4736-bd04-500a13bf4e17",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e6b9daf-495c-44e3-a39e-40fc8e654eae",
+              "name": "execution_id",
+              "type": "number",
+              "value": "={{ $('When RAG Executed').item.json.execution_id }}"
+            },
+            {
+              "id": "1ba39074-c67e-453c-9a64-07e0376e64bf",
+              "name": "tokenUsage",
+              "type": "array",
+              "value": "={{$jmespath(\n  $json,\n  \"data.resultData.runData.*[] | [?data.ai_languageModel] | [].{model: data.ai_languageModel[0][0].json.response.generations[0][0].generationInfo.model_name || inputOverride.ai_languageModel[0][0].json.options.model_name || inputOverride.ai_languageModel[0][0].json.options.model, tokenUsage: data.ai_languageModel[0][0].json.tokenUsage || data.ai_languageModel[0][0].json.tokenUsageEstimate}\"\n)}}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "workflowData.id, workflowData.name",
+        "options": {}
+      },
+      "id": "f946ebd0-e01c-4414-b764-3ae9fc76dd3f",
+      "name": "Extract token usage data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        992,
+        768
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "resource": "execution",
+        "operation": "get",
+        "executionId": "={{ $json.execution_id }}",
+        "options": {
+          "activeWorkflows": true
+        },
+        "requestOptions": {}
+      },
+      "id": "7b814b43-9ecb-4927-93a6-6770f0e22ede",
+      "name": "Get execution data",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        768,
+        768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "tokenUsage",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "e4bb0edc-5909-4940-a2d4-2cc326e28a0d",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1200,
+        768
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "sum",
+              "field": "tokenUsage.tokenUsage.promptTokens"
+            },
+            {
+              "aggregation": "sum",
+              "field": "tokenUsage.tokenUsage.completionTokens"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "id, name, tokenUsage.model, execution_id",
+        "options": {}
+      },
+      "id": "39a2d568-c46a-48b6-b2ae-999e2590cb58",
+      "name": "Sum Token Totals - aggregate by model",
+      "type": "n8n-nodes-base.summarize",
+      "position": [
+        1408,
+        768
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eba6edf3-5454-448c-99b3-e0d902b30144",
+              "name": "Input Tokens",
+              "value": "={{ $json.sum_tokenUsage_tokenUsage_promptTokens }}",
+              "type": "string"
+            },
+            {
+              "id": "3f68b9a7-9acd-401c-ac0f-19af7c658cc9",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1616,
+        768
+      ],
+      "id": "c28eb900-14df-416b-bf1f-ab29ad4047b5",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        720,
+        320
+      ],
+      "id": "a92aab74-6878-4682-a794-801ac5b0a8da",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "9UQwBbqYsB2I32fP",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $workflow.id }}"
+        },
+        "workflowInputs": {
+          "value": {
+            "execution_id": "={{ $execution.id }}"
+          },
+          "schema": [
+            {
+              "id": "execution_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "execution_id",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "execution_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "id": "6733d345-f75b-439e-81d7-7533808afd49",
+      "name": "Call sub-workflow (carbon footprint)",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "position": [
+        1344,
+        112
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "execution_id"
+            }
+          ]
+        }
+      },
+      "id": "7cbb301d-ff9f-4217-b0fd-1e2900583b44",
+      "name": "When RAG Executed",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        544,
+        768
+      ],
+      "typeVersion": 1.1
+    }
+  ],
+  "pinData": {
+    "When RAG Executed": [
+      {
+        "json": {
+          "execution_id": "594878"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversion Factor (CO₂)": {
+      "main": [
+        [
+          {
+            "node": "Calculate gCO₂e1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract token usage data": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get execution data": {
+      "main": [
+        [
+          {
+            "node": "Extract token usage data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Sum Token Totals - aggregate by model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sum Token Totals - aggregate by model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When RAG Executed": {
+      "main": [
+        [
+          {
+            "node": "Get execution data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "32496ce1-b905-4d33-a2d7-19f71d795326",
+  "meta": {
+    "instanceId": "fc25ac0d93def94634ed13ac52d18a31fc5f1410a97f98518181bcf979fcaa95"
+  },
+  "id": "c1YDJz8orooPkpBL",
+  "tags": [
+    {
+      "name": "rag",
+      "id": "5DFwS068vTKvh6JQ",
+      "updatedAt": "2025-12-04T09:22:57.450Z",
+      "createdAt": "2025-12-04T09:22:57.450Z"
+    },
+    {
+      "updatedAt": "2025-12-04T08:59:23.273Z",
+      "createdAt": "2025-12-04T08:59:23.273Z",
+      "id": "LwxhZOLmOr2KTYYr",
+      "name": "qdrant"
+    },
+    {
+      "updatedAt": "2025-12-04T08:48:24.452Z",
+      "createdAt": "2025-12-04T08:48:24.452Z",
+      "id": "SBnk9JqhH6zMWr7R",
+      "name": "demo"
+    }
+  ]
+}

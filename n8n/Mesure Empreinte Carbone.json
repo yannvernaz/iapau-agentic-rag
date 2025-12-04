@@ -1,0 +1,205 @@
+{
+  "name": "Mesure Empreinte Carbone",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "aca5ab49-589a-445e-aa53-a9596d6bd208",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        624,
+        224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Hello, peux-tu m'expliquer quelles sont les principes fondamentaux de la physique quantique ?",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Enter here the system prompt"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "29355edb-677a-494b-a1cf-c5ca0d227ebb",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1232,
+        224
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "id": "7ff4c2be-c0a2-42ec-bdee-a0947a9bce94",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1184,
+        416
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc17f2be-ce12-488f-89c7-de200b4c4869",
+              "name": "AI output",
+              "type": "string",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "id": "c396e3b8-f07f-4153-9892-1b499a724dbc",
+              "name": "AI output gCO₂e",
+              "type": "number",
+              "value": "={{ Math.ceil($json.text.length / 4) * $('Conversion factor').item.json['Conversion factor (in gCO₂e/token)'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "336bbfd9-77a0-4284-98a9-0c643734bdc2",
+      "name": "Calculate gCO₂e",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1584,
+        224
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "# Mesurez l'empreinte carbone de votre IA\n\nCe workflow présente une technique permettant de calculer le gCO₂e (grammes d'équivalent CO₂) de la production d'un modèle d'IA, sur la base de la méthodologie d'**Ecologits.ai**.\n\n## Comment ça marche\n\nUn nœud dédié **Facteur de conversion** facilite la configuration de vos paramètres. Le nœud **Calculer gCO₂e** utilise ensuite ce facteur et les entrée/sortie texte de l'IA pour estimer l'empreinte carbone.\n\n## Utilisation \n\n1.  **Définissez votre facteur de conversion (important !) :** le facteur par défaut est celui de **GPT-4o aux États-Unis**. Vous **devez** vous rendre sur **ecologits.ai/latest** pour trouver le facteur correct pour *votre modèle et votre région de serveur* et mettre à jour la valeur dans le nœud **« Conversion factor »**.\n2.  **Connectez l'extrait :** placez le nœud **« Conversion factor »** avant votre nœud IA et le nœud **« Calculate gCO₂e »** après celui-ci.\n3.  **Mettez à jour le calcul :** modifiez le nœud **« Calculer gCO₂e »** pour utiliser le texte de sortie de *votre* nœud IA.\n\n",
+        "height": 528,
+        "width": 704
+      },
+      "id": "eef73d69-ef5f-422b-9d04-e1f853e866f9",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        -448
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a2c5484b-173e-4647-8dc1-23c32a899f75",
+              "name": "Conversion factor (in gCO₂e/token)",
+              "type": "number",
+              "value": 0.0612
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e94e5829-e4b7-47f0-970d-6db77f72a8e6",
+      "name": "Conversion factor",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        928,
+        224
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "### Adaptez cette valeur à votre modèle et à vos paramètres\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        "height": 240,
+        "width": 272,
+        "color": 5
+      },
+      "id": "ad5008fd-cbe7-4b3f-b5ad-02d07035045f",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        848,
+        144
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Conversion factor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Calculate gCO₂e",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversion factor": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "244c8de4-8f5b-42f6-bc12-dce00c63d0b6",
+  "meta": {
+    "instanceId": "fc25ac0d93def94634ed13ac52d18a31fc5f1410a97f98518181bcf979fcaa95"
+  },
+  "id": "RsFnhRXIMtdedPcf",
+  "tags": []
+}

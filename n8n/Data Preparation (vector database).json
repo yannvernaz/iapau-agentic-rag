@@ -1,0 +1,287 @@
+{
+  "name": "Data Preparation (vector database)",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Upload your data to test RAG",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload your file(s)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf, .csv, .md",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "33507109-040e-41ce-82f9-c480f73dc953",
+      "name": "Upload your file here",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -144,
+        288
+      ],
+      "webhookId": "8fc1ed96-e717-4cbe-8d3e-d60404322ead",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 1536,
+          "batchSize": 200
+        }
+      },
+      "id": "28904c6c-8b45-4c8b-bfbf-3f34d8983edd",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        -16,
+        512
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "splitPages": false
+        }
+      },
+      "id": "bdef25a3-30c8-4e00-8b45-b710c0da37db",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        192,
+        480
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "### 📚 Load Data Flow",
+        "height": 556,
+        "width": 700,
+        "color": 7
+      },
+      "id": "7c32ccd3-b54c-4e69-a6b3-396004772cbf",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "ia-pau",
+          "mode": "list",
+          "cachedResultName": "ia-pau"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        288
+      ],
+      "id": "6601966a-7797-45cd-ab4e-128204ec310f",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "57UaYwCNIhhwV3Ps",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Créer Qdrant Collection\n\n",
+        "height": 80,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "bd189e8e-52d5-454e-9481-7658ad14d950",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://391065ec-58bc-4be2-b514-ac41edf47314.eu-central-1-0.aws.cloud.qdrant.io/collections/ia-pau",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"vectors\": {\n    \"size\": 1536,\n    \"distance\": \"Cosine\"  \n  },\n  \"shard_number\": 1,  \n  \"replication_factor\": 1,  \n  \"write_consistency_factor\": 1 \n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -240,
+        16
+      ],
+      "id": "57554e2a-89aa-40cb-b14a-6f4208d93bd8",
+      "name": "Create Collection",
+      "credentials": {
+        "qdrantApi": {
+          "id": "57UaYwCNIhhwV3Ps",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Delete Qdrant Collection\n\n",
+        "height": 80,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "589ccfed-45ae-4eb1-b454-85d0ad68c0a9",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "https://391065ec-58bc-4be2-b514-ac41edf47314.eu-central-1-0.aws.cloud.qdrant.io/collections/iapau",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        400,
+        16
+      ],
+      "id": "65d81cd5-c47a-4d8b-86c8-b40f4420330a",
+      "name": "Delete Collection",
+      "credentials": {
+        "qdrantApi": {
+          "id": "57UaYwCNIhhwV3Ps",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 2048,
+        "chunkOverlap": 50,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        192,
+        640
+      ],
+      "id": "318a371c-9a7b-4244-bf22-4e5c524e26d8",
+      "name": "Recursive Character Text Splitter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload your file here": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "62155fbd-8c74-484a-93bc-3199a20e40a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc25ac0d93def94634ed13ac52d18a31fc5f1410a97f98518181bcf979fcaa95"
+  },
+  "id": "7QeNZ7eQxIZnf0B0",
+  "tags": [
+    {
+      "updatedAt": "2025-12-04T08:59:23.273Z",
+      "createdAt": "2025-12-04T08:59:23.273Z",
+      "id": "LwxhZOLmOr2KTYYr",
+      "name": "qdrant"
+    },
+    {
+      "updatedAt": "2025-12-04T08:48:24.452Z",
+      "createdAt": "2025-12-04T08:48:24.452Z",
+      "id": "SBnk9JqhH6zMWr7R",
+      "name": "demo"
+    }
+  ]
+}

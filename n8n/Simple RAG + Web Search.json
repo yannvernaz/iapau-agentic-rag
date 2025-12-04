@@ -1,0 +1,273 @@
+{
+  "name": "Simple RAG + Web Search",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "ff3c26ea-ef9f-40d5-8ba3-b46cd9cbbfbe",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        720,
+        496
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "cdbcd383-ba33-4def-9c58-bbdc0e88e2bc",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        48,
+        96
+      ],
+      "webhookId": "2c4d4c43-3490-4b47-9b89-d3d517fa83b7",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "text",
+          "temperature": 0.2
+        }
+      },
+      "id": "25bec5ec-05fa-47cb-9df3-a04fc8ce516c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        96,
+        320
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "8Mm0QaFI5C94pDRU",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### 🐕 . RAG Flow",
+        "height": 668,
+        "width": 1016,
+        "color": 7
+      },
+      "id": "b8fc66ec-41e8-461c-a144-4d079f0212e4",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the knowledge base for relevant information to answer questions",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "ia-pau",
+          "mode": "list",
+          "cachedResultName": "ia-pau"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        320
+      ],
+      "id": "32e5808a-251f-4d7d-8d8a-4a769f7077ed",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "57UaYwCNIhhwV3Ps",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "1f6be0ca-1da1-42df-83bc-2ce97935f9f5",
+      "name": "Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Vous êtes un assistant IA qui a accès à une base de connaissances. Lorsque les utilisateurs posent des questions, utilisez l'outil de recherche de la base de connaissances pour trouver les informations pertinentes et fournir des réponses précises et utiles en fonction du contexte récupéré. Citez toujours les informations provenant de la base de connaissances lorsque vous répondez aux questions."
+        }
+      },
+      "id": "967902f8-dacc-4958-8baa-e34c275feb92",
+      "name": "RAG Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        320,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        240,
+        320
+      ],
+      "id": "c9bcfc73-d09d-4f7e-9569-24cecb7f753c",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "9UQwBbqYsB2I32fP",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        512,
+        320
+      ],
+      "id": "469bbf3c-e174-43e9-bff6-9d27a80eea78",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "wsvhWuMugAePjNPZ",
+          "name": "SerpAPI account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9c151cda-7348-444e-9bfc-f67c529ea057",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc25ac0d93def94634ed13ac52d18a31fc5f1410a97f98518181bcf979fcaa95"
+  },
+  "id": "GVdM94PmORhWEC4Z",
+  "tags": [
+    {
+      "name": "rag",
+      "id": "5DFwS068vTKvh6JQ",
+      "updatedAt": "2025-12-04T09:22:57.450Z",
+      "createdAt": "2025-12-04T09:22:57.450Z"
+    },
+    {
+      "updatedAt": "2025-12-04T08:59:23.273Z",
+      "createdAt": "2025-12-04T08:59:23.273Z",
+      "id": "LwxhZOLmOr2KTYYr",
+      "name": "qdrant"
+    },
+    {
+      "updatedAt": "2025-12-04T08:48:24.452Z",
+      "createdAt": "2025-12-04T08:48:24.452Z",
+      "id": "SBnk9JqhH6zMWr7R",
+      "name": "demo"
+    }
+  ]
+}
